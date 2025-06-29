@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Secure Password Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    
+</head>
+<body>
+    <div class="welcome-container" id="welcomeContainer" style="display: none;">
+        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+            <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+            <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+        </svg>
+        <div class="welcome-text">Welcome Raj!</div>
+        <div class="welcome-subtext">Your passwords are securely locked</div>
+    </div>
+
+    <div class="liquid-container" id="loadingContainer">
+        <div class="liquid-loader"></div>
+        <div class="secure-text">Secure</div>
+        <div class="nio-text">Nio.BOT</div>
+    </div>
+
+    <div class="login-modal" id="loginModal" style="display: none;">
+        <div class="login-content">
+            <div class="login-error" id="loginError"><i class="fas fa-times"></i> Incorrect password. Please try again.
+            </div>
+            <h2 class="login-title"><i class="fas fa-lock"></i> SecurePass Manager</h2>
+            <div class="login-success" id="loginSuccess"><i class="fas fa-check"></i> Welcome Raj!</div>
+            <div class="lockout-message" id="lockoutMessage">Too many failed attempts. Please wait <span
+                    class="countdown-timer" id="countdownTimer"></span>.</div>
+            <div id="passwordLoginSection">
+                <div class="form-group">
+                    <label for="loginPassword">Enter Password</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password">
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary pulse-animation" id="loginBtn" style="width: 100%;">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                </div>
+                <a href="#" class="forgot-password" id="forgotPasswordLink">Forgot Password?</a>
+            </div>
+
+            <div id="emailLoginSection" style="display: none;">
+                <div class="form-group">
+                    <label for="loginEmail">Enter Email</label>
+                    <input type="email" id="loginEmail" class="form-control" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary pulse-animation" id="submitEmailBtn" style="width: 100%;">
+                        <i class="fas fa-sign-in-alt"></i> Submit Email
+                    </button>
+                </div>
+                <a href="#" class="forgot-password" id="backToPasswordLink">Back to Password Login</a>
+            </div>
+
+            <div id="resetPasswordSection" style="display: none;">
+                <div class="form-group">
+                    <label for="newMasterPassword">New Master Password</label>
+                    <div class="password-field">
+                        <input type="password" id="newMasterPassword" class="form-control"
+                            placeholder="Enter new password" required>
+                        <i class="fas fa-eye toggle-password"
+                            onclick="togglePasswordVisibility(this, 'newMasterPassword')"></i>
+                    </div>
+                    <div class="password-strength">
+                        <div class="strength-bar" id="newMasterPasswordStrengthBar"></div>
+                    </div>
+                    <small class="text-muted">Use at least 8 characters with a mix of letters, numbers, and
+                        symbols</small>
+                    <div class="form-group">
+                        <label for="confirmMasterPassword">Confirm New Password</label>
+                        <div class="password-field">
+                            <input type="password" id="confirmMasterPassword" class="form-control"
+                                placeholder="Confirm new password" required>
+                            <i class="fas fa-eye toggle-password"
+                                onclick="togglePasswordVisibility(this, 'confirmMasterPassword')"></i>
+                        </div>
+                    </div>
+                    <div class="login-error" id="resetPasswordError" style="display: none;"></div>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary pulse-animation" id="resetPasswordBtn" style="width: 100%;">
+                        <i class="fas fa-key"></i> Reset Password
+                    </button>
+                </div>
+                <a href="#" class="forgot-password" id="backToEmailLink">Back to Email</a>
+            </div>
+
+            <div style="text-align: center; margin-top: 15px; font-size: 12px; color: #6c757d;">
+                <i class="fas fa-info-circle"></i> Rituraj your data is encrypted locally
+            </div>
+        </div>
+    </div>
+
+    <div id="mainContent" style="display: none;">
+        <div class="container">
+            <header>
+                <div class="logo">
+                    <i class="fas fa-lock"></i>
+                    SecurePass Manager
+                </div>
+                <div class="header-buttons">
+                    <button class="add-product-btn" id="addProductBtn">
+                        <i class="fas fa-plus"></i>
+                        Add Password
+                    </button>
+                    <button class="settings-btn" id="settingsBtn">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </button>
+                </div>
+            </header>
+
+            <div id="passwordTableContainer">
+                <table class="password-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Account Name</th>
+                            <th>Username/Email</th>
+                            <th>Password</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="passwordTableBody">
+                    </tbody>
+                </table>
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <i class="fas fa-key"></i>
+                    <h3>No Passwords Saved Yet</h3>
+                    <p>Add your first password to get started</p>
+                    <button class="add-product-btn" id="addFirstPasswordBtn">
+                        <i class="fas fa-plus"></i>
+                        Add Password
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="addProductModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Add New Password</h3>
+                    <button class="close-btn" id="closeModal">×</button>
+                </div>
+                <form id="productForm">
+                    <div class="form-group">
+                        <label for="productName">Account Name</label>
+                        <input type="text" id="productName" class="form-control" placeholder="e.g., Google Account"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productUsername">Username/Email</label>
+                        <input type="text" id="productUsername" class="form-control" placeholder="username@example.com"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productPassword">Password</label>
+                        <div class="password-field">
+                            <input type="password" id="productPassword" class="form-control" required>
+                            <i class="fas fa-eye toggle-password"
+                                onclick="togglePasswordVisibility(this, 'productPassword')"></i>
+                        </div>
+                        <div class="password-strength">
+                            <div class="strength-bar" id="strengthBar"></div>
+                        </div>
+                        <small class="text-muted">Use at least 8 characters with a mix of letters, numbers, and
+                            symbols</small>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-secondary" id="generatePassword">
+                            <i class="fas fa-key"></i> Generate Strong Password
+                        </button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="cancelAdd">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <span class="loading" id="submitLoading" style="display: none;"></span>
+                            <span id="submitText">Save Password</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="modal" id="viewPasswordModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Password Details</h3>
+                    <button class="close-btn" id="closeViewModal">×</button>
+                </div>
+                <div class="form-group">
+                    <label>Account Name</label>
+                    <p id="viewAccountName" class="form-control-static"></p>
+                </div>
+                <div class="form-group">
+                    <label>Username/Email</label>
+                    <p id="viewUsername" class="form-control-static"></p>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="password-field">
+                        <p id="viewPassword" class="form-control-static">••••••••</p>
+                        <i class="fas fa-eye toggle-password"
+                            onclick="togglePasswordVisibility(this, 'viewPassword')"></i>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="closeViewModalBtn">Close</button>
+                    <button type="button" class="btn btn-primary" id="copyPasswordBtn">
+                        <i class="fas fa-copy"></i> Copy Password
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="settingsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Settings</h3>
+                    <button class="close-btn" id="closeSettingsModal">×</button>
+                </div>
+                <form id="settingsForm">
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password</label>
+                        <div class="password-field">
+                            <input type="password" id="currentPassword" class="form-control" required>
+                            <i class="fas fa-eye toggle-password"
+                                onclick="togglePasswordVisibility(this, 'currentPassword')"></i>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <div class="password-field">
+                            <input type="password" id="newPassword" class="form-control" required>
+                            <i class="fas fa-eye toggle-password"
+                                onclick="togglePasswordVisibility(this, 'newPassword')"></i>
+                        </div>
+                        <div class="password-strength">
+                            <div class="strength-bar" id="newPasswordStrengthBar"></div>
+                        </div>
+                        <small class="text-muted">Use at least 8 characters with a mix of letters, numbers, and
+                            symbols</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm New Password</label>
+                        <div class="password-field">
+                            <input type="password" id="confirmPassword" class="form-control" required>
+                            <i class="fas fa-eye toggle-password"
+                                onclick="togglePasswordVisibility(this, 'confirmPassword')"></i>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="login-error" id="settingsError" style="display: none;"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="cancelSettings">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <span class="loading" id="settingsSubmitLoading" style="display: none;"></span>
+                            <span id="settingsSubmitText">Change Password</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
