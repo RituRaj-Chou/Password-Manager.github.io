@@ -1,4 +1,3 @@
-
         let CORRECT_PASSWORD = localStorage.getItem('masterPassword') || "RituRaj@#1";
         let passwords = JSON.parse(localStorage.getItem('passwords')) || [];
         let currentEditingId = null;
@@ -7,9 +6,11 @@
         let lockoutTimeout = null;
         const ALLOWED_EMAILS = ['hackerraj592@gmail.com', 'choudhurygokul7@gmail.com'];
 
+        // Loading elements
+        const loadingContainer = document.getElementById('loadingContainer');
+
         // Login elements
         const loginModal = document.getElementById('loginModal');
-        const loadingContainer = document.getElementById('loadingContainer');
         const welcomeContainer = document.getElementById('welcomeContainer');
         const loginPassword = document.getElementById('loginPassword');
         const loginEmail = document.getElementById('loginEmail');
@@ -42,19 +43,25 @@
         const addProductBtn = document.getElementById('addProductBtn');
         const addFirstPasswordBtn = document.getElementById('addFirstPasswordBtn');
         const settingsBtn = document.getElementById('settingsBtn');
+        const backupBtn = document.getElementById('backupBtn');
+        const importBtn = document.getElementById('importBtn');
         const addProductModal = document.getElementById('addProductModal');
         const viewPasswordModal = document.getElementById('viewPasswordModal');
         const settingsModal = document.getElementById('settingsModal');
+        const importModal = document.getElementById('importModal');
         const closeModal = document.getElementById('closeModal');
         const closeViewModal = document.getElementById('closeViewModal');
         const closeViewModalBtn = document.getElementById('closeViewModalBtn');
         const closeSettingsModal = document.getElementById('closeSettingsModal');
+        const closeImportModal = document.getElementById('closeImportModal');
         const cancelAdd = document.getElementById('cancelAdd');
         const cancelSettings = document.getElementById('cancelSettings');
+        const cancelImport = document.getElementById('cancelImport');
         const passwordTableBody = document.getElementById('passwordTableBody');
         const emptyState = document.getElementById('emptyState');
         const productForm = document.getElementById('productForm');
         const settingsForm = document.getElementById('settingsForm');
+        const importForm = document.getElementById('importForm');
         const submitLoading = document.getElementById('submitLoading');
         const submitText = document.getElementById('submitText');
         const passwordInput = document.getElementById('productPassword');
@@ -68,56 +75,61 @@
         const settingsSubmitLoading = document.getElementById('settingsSubmitLoading');
         const settingsSubmitText = document.getElementById('settingsSubmitText');
         const newPasswordStrengthBar = document.getElementById('newPasswordStrengthBar');
+        const productImage = document.getElementById('productImage');
+        const imagePreview = document.getElementById('imagePreview');
+        const removeImageBtn = document.getElementById('removeImageBtn');
+        const viewImage = document.getElementById('viewImage');
+        const searchInput = document.getElementById('searchInput');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const importFile = document.getElementById('importFile');
+        const importLoading = document.getElementById('importLoading');
+        const importText = document.getElementById('importText');
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // Show loading animation first
-            loadingContainer.style.display = 'flex';
+        // Show loading animation initially
+        loadingContainer.style.display = 'flex';
 
-            setTimeout(() => {
-                loadingContainer.style.display = 'none';
-                document.body.style.overflow = 'auto';
-                // Show login modal after loading animation
-                if (sessionStorage.getItem('loggedIn') === 'true') {
-                    loginModal.style.display = 'none';
-                    mainContent.style.display = 'block';
-                    initializeApp();
-                } else {
-                    loginModal.style.display = 'flex';
-                    const lockoutEnd = localStorage.getItem('lockoutEnd');
-                    if (lockoutEnd && new Date().getTime() < parseInt(lockoutEnd)) {
-                        startLockoutTimer(parseInt(lockoutEnd));
-                    }
+        // Hide loading animation after 3 seconds
+        setTimeout(() => {
+            loadingContainer.style.display = 'none';
+            
+            // Then check if user is logged in
+            if (sessionStorage.getItem('loggedIn') === 'true') {
+                loginModal.style.display = 'none';
+                mainContent.style.display = 'block';
+                initializeApp();
+            } else {
+                loginModal.style.display = 'flex';
+                const lockoutEnd = localStorage.getItem('lockoutEnd');
+                if (lockoutEnd && new Date().getTime() < parseInt(lockoutEnd)) {
+                    startLockoutTimer(parseInt(lockoutEnd));
                 }
-            }, 3500);
+            }
+        }, 3000);
 
-            // Event listeners for login flow
-            loginBtn.addEventListener('click', handlePasswordLogin);
-            loginPassword.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    handlePasswordLogin();
-                }
-            });
-
-            submitEmailBtn.addEventListener('click', handleEmailSubmit);
-            loginEmail.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    handleEmailSubmit();
-                }
-            });
-
-            resetPasswordBtn.addEventListener('click', handlePasswordReset);
-            newMasterPassword.addEventListener('input', updateNewMasterPasswordStrength);
-            confirmMasterPassword.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    handlePasswordReset();
-                }
-            });
-
-            // Navigation between login sections
-            forgotPasswordLink.addEventListener('click', showEmailLogin);
-            backToPasswordLink.addEventListener('click', showPasswordLogin);
-            backToEmailLink.addEventListener('click', showEmailLogin);
+        loginBtn.addEventListener('click', handlePasswordLogin);
+        loginPassword.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') { handlePasswordLogin(); }
         });
+
+        submitEmailBtn.addEventListener('click', handleEmailSubmit);
+        loginEmail.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') { handleEmailSubmit(); }
+        });
+
+        resetPasswordBtn.addEventListener('click', handlePasswordReset);
+        newMasterPassword.addEventListener('input', updateNewMasterPasswordStrength);
+        confirmMasterPassword.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') { handlePasswordReset(); }
+        });
+
+        forgotPasswordLink.addEventListener('click', showEmailLogin);
+        backToPasswordLink.addEventListener('click', showPasswordLogin);
+        backToEmailLink.addEventListener('click', showEmailLogin);
+
+        productImage.addEventListener('change', handleImageUpload);
+        removeImageBtn.addEventListener('click', removeImage);
+        searchInput.addEventListener('input', filterPasswords);
+        categoryFilter.addEventListener('change', filterPasswords);
 
         function showPasswordLogin() {
             passwordLoginSection.style.display = 'block';
@@ -176,9 +188,7 @@
                 loginSuccess.style.display = 'none';
                 loginError.style.display = 'block';
                 loginPassword.classList.add('shake');
-                setTimeout(() => {
-                    loginPassword.classList.remove('shake');
-                }, 500);
+                setTimeout(() => { loginPassword.classList.remove('shake'); }, 500);
                 loginPassword.value = '';
                 loginPassword.focus();
             }
@@ -208,9 +218,7 @@
                 loginError.style.display = 'block';
                 loginError.textContent = 'Invalid email. Please try again.';
                 loginEmail.classList.add('shake');
-                setTimeout(() => {
-                    loginEmail.classList.remove('shake');
-                }, 500);
+                setTimeout(() => { loginEmail.classList.remove('shake'); }, 500);
                 loginEmail.value = '';
                 loginEmail.focus();
             }
@@ -236,9 +244,7 @@
                 resetPasswordError.textContent = 'Passwords do not match';
                 resetPasswordError.style.display = 'block';
                 confirmMasterPassword.classList.add('shake');
-                setTimeout(() => {
-                    confirmMasterPassword.classList.remove('shake');
-                }, 500);
+                setTimeout(() => { confirmMasterPassword.classList.remove('shake'); }, 500);
                 return;
             }
 
@@ -246,9 +252,7 @@
                 resetPasswordError.textContent = 'Password must be at least 8 characters with letters, numbers, and symbols';
                 resetPasswordError.style.display = 'block';
                 newMasterPassword.classList.add('shake');
-                setTimeout(() => {
-                    newMasterPassword.classList.remove('shake');
-                }, 500);
+                setTimeout(() => { newMasterPassword.classList.remove('shake'); }, 500);
                 return;
             }
 
@@ -288,11 +292,11 @@
             loginBtn.disabled = true;
             submitEmailBtn.disabled = true;
             resetPasswordBtn.disabled = true;
-            lockoutMessage.style.display = 'block';
             loginPassword.disabled = true;
             loginEmail.disabled = true;
             newMasterPassword.disabled = true;
             confirmMasterPassword.disabled = true;
+            lockoutMessage.style.display = 'block';
 
             function updateTimer() {
                 const timeLeft = lockoutEndTime - new Date().getTime();
@@ -346,35 +350,40 @@
             addProductBtn.addEventListener('click', openAddModal);
             addFirstPasswordBtn.addEventListener('click', openAddModal);
             settingsBtn.addEventListener('click', openSettingsModal);
+            backupBtn.addEventListener('click', backupPasswords);
+            importBtn.addEventListener('click', openImportModal);
             closeModal.addEventListener('click', closeAddModal);
             closeViewModal.addEventListener('click', closeViewModalFunc);
             closeViewModalBtn.addEventListener('click', closeViewModalFunc);
             closeSettingsModal.addEventListener('click', closeSettingsModalFunc);
+            closeImportModal.addEventListener('click', closeImportModalFunc);
             cancelAdd.addEventListener('click', closeAddModal);
             cancelSettings.addEventListener('click', closeSettingsModalFunc);
+            cancelImport.addEventListener('click', closeImportModalFunc);
             productForm.addEventListener('submit', handleFormSubmit);
             settingsForm.addEventListener('submit', handleSettingsSubmit);
+            importForm.addEventListener('submit', handleImportSubmit);
             generatePasswordBtn.addEventListener('click', generateStrongPassword);
             copyPasswordBtn.addEventListener('click', copyPasswordToClipboard);
             passwordInput.addEventListener('input', updatePasswordStrength);
             newPassword.addEventListener('input', updateNewPasswordStrength);
-
             window.addEventListener('click', (e) => {
                 if (e.target === addProductModal) closeAddModal();
                 if (e.target === viewPasswordModal) closeViewModalFunc();
                 if (e.target === settingsModal) closeSettingsModalFunc();
+                if (e.target === importModal) closeImportModalFunc();
             });
         }
 
-        function renderPasswordTable() {
+        function renderPasswordTable(filteredPasswords = passwords) {
             passwordTableBody.innerHTML = '';
 
-            if (passwords.length === 0) {
+            if (filteredPasswords.length === 0) {
                 updateEmptyState();
                 return;
             }
 
-            passwords.forEach((password, index) => {
+            filteredPasswords.forEach((password, index) => {
                 const tr = document.createElement('tr');
                 tr.style.animationDelay = `${index * 0.1}s`;
                 tr.innerHTML = `
@@ -385,6 +394,7 @@
                         <span class="password-text" data-password="${password.password}">••••••••</span>
                         <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility(this)"></i>
                     </td>
+                    <td>${password.category || 'Other'}</td>
                     <td>
                         <button class="action-btn view-btn" title="View" onclick="viewPassword(${index})">
                             <i class="fas fa-eye"></i>
@@ -403,10 +413,10 @@
 
         function updateEmptyState() {
             if (passwords.length === 0) {
-                document.querySelector('.password-table').style.display = 'none';
+                document.querySelector('.password-table-container').style.display = 'none';
                 emptyState.style.display = 'block';
             } else {
-                document.querySelector('.password-table').style.display = 'table';
+                document.querySelector('.password-table-container').style.display = 'block';
                 emptyState.style.display = 'none';
             }
         }
@@ -415,18 +425,23 @@
             currentEditingId = null;
             document.getElementById('productForm').reset();
             strengthBar.style.width = '0%';
+            imagePreview.style.display = 'none';
+            imagePreview.src = '';
+            removeImageBtn.style.display = 'none';
             submitText.textContent = 'Save Password';
             document.querySelector('.modal-title').textContent = 'Add New Password';
             addProductModal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
-            setTimeout(() => {
-                document.getElementById('productName').focus();
-            }, 300);
+            setTimeout(() => { document.getElementById('productName').focus(); }, 300);
         }
 
         function closeAddModal() {
             addProductModal.style.display = 'none';
             document.body.style.overflow = 'auto';
+            productImage.value = '';
+            imagePreview.style.display = 'none';
+            imagePreview.src = '';
+            removeImageBtn.style.display = 'none';
         }
 
         function openViewModal() {
@@ -437,6 +452,8 @@
         function closeViewModalFunc() {
             viewPasswordModal.style.display = 'none';
             document.body.style.overflow = 'auto';
+            viewImage.style.display = 'none';
+            viewImage.src = '';
         }
 
         function openSettingsModal() {
@@ -445,13 +462,23 @@
             settingsError.style.display = 'none';
             settingsModal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
-            setTimeout(() => {
-                document.getElementById('currentPassword').focus();
-            }, 300);
+            setTimeout(() => { document.getElementById('currentPassword').focus(); }, 300);
         }
 
         function closeSettingsModalFunc() {
             settingsModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function openImportModal() {
+            document.getElementById('importForm').reset();
+            importModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => { document.getElementById('importFile').focus(); }, 300);
+        }
+
+        function closeImportModalFunc() {
+            importModal.style.display = 'none';
             document.body.style.overflow = 'auto';
         }
 
@@ -461,6 +488,10 @@
             document.getElementById('viewUsername').textContent = password.username;
             document.getElementById('viewPassword').textContent = '••••••••';
             document.getElementById('viewPassword').setAttribute('data-password', password.password);
+            document.getElementById('viewCategory').textContent = password.category || 'Other';
+            viewImage.style.display = password.image ? 'block' : 'none';
+            viewImage.src = password.image || '';
+            viewImage.alt = password.image ? 'Account Image' : 'No image available';
             openViewModal();
         }
 
@@ -470,14 +501,16 @@
             document.getElementById('productName').value = password.name;
             document.getElementById('productUsername').value = password.username;
             document.getElementById('productPassword').value = password.password;
+            document.getElementById('productCategory').value = password.category || 'Other';
+            imagePreview.src = password.image || '';
+            imagePreview.style.display = password.image ? 'block' : 'none';
+            removeImageBtn.style.display = password.image ? 'block' : 'none';
             updatePasswordStrength();
             document.querySelector('.modal-title').textContent = 'Edit Password';
             submitText.textContent = 'Update Password';
             addProductModal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
-            setTimeout(() => {
-                document.getElementById('productName').focus();
-            }, 300);
+            setTimeout(() => { document.getElementById('productName').focus(); }, 300);
         }
 
         function deletePassword(index) {
@@ -498,15 +531,17 @@
             const name = document.getElementById('productName').value.trim();
             const username = document.getElementById('productUsername').value.trim();
             const password = document.getElementById('productPassword').value;
+            const category = document.getElementById('productCategory').value;
+            const image = imagePreview.src && imagePreview.style.display !== 'none' ? imagePreview.src : '';
 
             submitLoading.style.display = 'inline-block';
             submitText.textContent = 'Saving...';
 
             setTimeout(() => {
                 if (currentEditingId !== null) {
-                    passwords[currentEditingId] = { name, username, password };
+                    passwords[currentEditingId] = { name, username, password, category, image };
                 } else {
-                    passwords.push({ name, username, password });
+                    passwords.push({ name, username, password, category, image });
                 }
                 savePasswords();
                 submitLoading.style.display = 'none';
@@ -515,6 +550,9 @@
                 setTimeout(() => {
                     productForm.reset();
                     strengthBar.style.width = '0%';
+                    imagePreview.src = '';
+                    imagePreview.style.display = 'none';
+                    removeImageBtn.style.display = 'none';
                     closeAddModal();
                     renderPasswordTable();
                     updateEmptyState();
@@ -533,9 +571,7 @@
                 settingsError.textContent = 'Current password is incorrect';
                 settingsError.style.display = 'block';
                 currentPassword.classList.add('shake');
-                setTimeout(() => {
-                    currentPassword.classList.remove('shake');
-                }, 500);
+                setTimeout(() => { currentPassword.classList.remove('shake'); }, 500);
                 return;
             }
 
@@ -543,9 +579,7 @@
                 settingsError.textContent = 'New passwords do not match';
                 settingsError.style.display = 'block';
                 confirmPassword.classList.add('shake');
-                setTimeout(() => {
-                    confirmPassword.classList.remove('shake');
-                }, 500);
+                setTimeout(() => { confirmPassword.classList.remove('shake'); }, 500);
                 return;
             }
 
@@ -553,9 +587,7 @@
                 settingsError.textContent = 'New password must be at least 8 characters with letters, numbers, and symbols';
                 settingsError.style.display = 'block';
                 newPassword.classList.add('shake');
-                setTimeout(() => {
-                    newPassword.classList.remove('shake');
-                }, 500);
+                setTimeout(() => { newPassword.classList.remove('shake'); }, 500);
                 return;
             }
 
@@ -574,13 +606,84 @@
                     settingsError.style.display = 'none';
                     closeSettingsModalFunc();
                     settingsSubmitText.textContent = 'Change Password';
-                    // Force re-login
                     sessionStorage.removeItem('loggedIn');
                     loginModal.style.display = 'flex';
                     mainContent.style.display = 'none';
                     showPasswordLogin();
                 }, 500);
             }, 800);
+        }
+
+        function backupPasswords() {
+            const csvContent = [
+                'Account Name,Username/Email,Password,Category,Image',
+                ...passwords.map(p => `"${p.name.replace(/"/g, '""')}","${p.username.replace(/"/g, '""')}","${p.password.replace(/"/g, '""')}","${p.category || 'Other'}","${p.image || ''}"`)
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'passwords_backup.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            backupBtn.innerHTML = '<i class="fas fa-check"></i> Backed Up!';
+            setTimeout(() => {
+                backupBtn.innerHTML = '<i class="fas fa-download"></i> Backup';
+            }, 2000);
+        }
+
+        function handleImportSubmit(e) {
+            e.preventDefault();
+            const file = importFile.files[0];
+            if (!file) {
+                alert('Please select a CSV file to import');
+                return;
+            }
+
+            importLoading.style.display = 'inline-block';
+            importText.textContent = 'Importing...';
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const rows = text.split('\n').slice(1).filter(row => row.trim() !== '');
+                const importedPasswords = rows.map(row => {
+                    const [name, username, password, category, image] = row.split(',').map(item => item.replace(/^"|"$/g, '').replace(/""/g, '"'));
+                    return { name, username, password, category: category || 'Other', image: image || '' };
+                });
+
+                passwords = [...passwords, ...importedPasswords];
+                savePasswords();
+                importLoading.style.display = 'none';
+                importText.textContent = 'Imported!';
+
+                setTimeout(() => {
+                    importForm.reset();
+                    closeImportModalFunc();
+                    renderPasswordTable();
+                    updateEmptyState();
+                    importText.textContent = 'Import';
+                }, 500);
+            };
+            reader.readAsText(file);
+        }
+
+        function filterPasswords() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const category = categoryFilter.value;
+
+            const filteredPasswords = passwords.filter(password => {
+                const matchesSearch = password.name.toLowerCase().includes(searchTerm) || 
+                                     password.username.toLowerCase().includes(searchTerm);
+                const matchesCategory = category === '' || password.category === category;
+                return matchesSearch && matchesCategory;
+            });
+
+            renderPasswordTable(filteredPasswords);
         }
 
         function savePasswords() {
@@ -670,10 +773,33 @@
             navigator.clipboard.writeText(password).then(() => {
                 const originalText = copyPasswordBtn.innerHTML;
                 copyPasswordBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                setTimeout(() => {
-                    copyPasswordBtn.innerHTML = originalText;
-                }, 2000);
+                setTimeout(() => { copyPasswordBtn.innerHTML = originalText; }, 2000);
             });
+        }
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                    alert('Image size must be less than 5MB');
+                    event.target.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    removeImageBtn.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeImage() {
+            imagePreview.src = '';
+            imagePreview.style.display = 'none';
+            removeImageBtn.style.display = 'none';
+            productImage.value = '';
         }
 
         window.togglePasswordVisibility = togglePasswordVisibility;
