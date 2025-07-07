@@ -5,6 +5,7 @@
         let isLockedOut = false;
         let lockoutTimeout = null;
         const ALLOWED_EMAILS = ['hackerraj592@gmail.com', 'choudhurygokul7@gmail.com'];
+        let darkMode = localStorage.getItem('darkMode') === 'true';
 
         // Loading elements
         const loadingContainer = document.getElementById('loadingContainer');
@@ -84,6 +85,25 @@
         const importFile = document.getElementById('importFile');
         const importLoading = document.getElementById('importLoading');
         const importText = document.getElementById('importText');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+
+        // Apply dark mode on load
+        function applyDarkMode() {
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i><span>Light Mode</span>';
+            } else {
+                document.body.classList.remove('dark-mode');
+                darkModeToggle.innerHTML = '<i class="fas fa-moon"></i><span>Dark Mode</span>';
+            }
+        }
+
+        // Toggle dark mode
+        function toggleDarkMode() {
+            darkMode = !darkMode;
+            localStorage.setItem('darkMode', darkMode);
+            applyDarkMode();
+        }
 
         // Show loading animation initially
         loadingContainer.style.display = 'flex';
@@ -91,11 +111,12 @@
         // Hide loading animation after 3 seconds
         setTimeout(() => {
             loadingContainer.style.display = 'none';
-            
+
             // Then check if user is logged in
             if (sessionStorage.getItem('loggedIn') === 'true') {
                 loginModal.style.display = 'none';
                 mainContent.style.display = 'block';
+                applyDarkMode();
                 initializeApp();
             } else {
                 loginModal.style.display = 'flex';
@@ -125,6 +146,7 @@
         forgotPasswordLink.addEventListener('click', showEmailLogin);
         backToPasswordLink.addEventListener('click', showPasswordLogin);
         backToEmailLink.addEventListener('click', showEmailLogin);
+        darkModeToggle.addEventListener('click', toggleDarkMode);
 
         productImage.addEventListener('change', handleImageUpload);
         removeImageBtn.addEventListener('click', removeImage);
@@ -181,6 +203,7 @@
                     welcomeContainer.style.display = 'none';
                     sessionStorage.setItem('loggedIn', 'true');
                     mainContent.style.display = 'block';
+                    applyDarkMode();
                     initializeApp();
                 }, 3500);
             } else {
@@ -276,6 +299,7 @@
                         welcomeContainer.style.display = 'none';
                         sessionStorage.setItem('loggedIn', 'true');
                         mainContent.style.display = 'block';
+                        applyDarkMode();
                         initializeApp();
                         resetPasswordBtn.innerHTML = '<i class="fas fa-key"></i> Reset Password';
                         showPasswordLogin();
@@ -648,7 +672,7 @@
             importText.textContent = 'Importing...';
 
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 const text = e.target.result;
                 const rows = text.split('\n').slice(1).filter(row => row.trim() !== '');
                 const importedPasswords = rows.map(row => {
@@ -677,8 +701,8 @@
             const category = categoryFilter.value;
 
             const filteredPasswords = passwords.filter(password => {
-                const matchesSearch = password.name.toLowerCase().includes(searchTerm) || 
-                                     password.username.toLowerCase().includes(searchTerm);
+                const matchesSearch = password.name.toLowerCase().includes(searchTerm) ||
+                    password.username.toLowerCase().includes(searchTerm);
                 const matchesCategory = category === '' || password.category === category;
                 return matchesSearch && matchesCategory;
             });
@@ -786,7 +810,7 @@
                     return;
                 }
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     imagePreview.src = e.target.result;
                     imagePreview.style.display = 'block';
                     removeImageBtn.style.display = 'block';
