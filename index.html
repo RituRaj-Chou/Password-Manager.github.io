@@ -19,7 +19,7 @@
             --animation-speed: 0.3s;
             --base-font-size: 16px;
             
-            /* Dark mode variables */
+            /* Colors */
             --bg-color: #ffffff;
             --text-color: #333333;
             --card-bg: #ffffff;
@@ -31,23 +31,6 @@
             --input-bg: #ffffff;
             --input-border: #ddd;
             --shadow-color: rgba(0, 0, 0, 0.1);
-            /* --bg-overlay: rgba(255, 255, 255, 0.7); */
-        }
-
-        /* Dark mode theme */
-        .dark-mode {
-            --bg-color: #121212;
-            --text-color: #e0e0e0;
-            --card-bg: #1e1e1e;
-            --border-color: #333333;
-            --table-header-bg: #1a1a1a;
-            --table-header-color: #e0e0e0;
-            --table-row-hover: #2a2a2a;
-            --modal-bg: #1e1e1e;
-            --input-bg: #2d2d2d;
-            --input-border: #444;
-            --shadow-color: rgba(0, 0, 0, 0.3);
-            --bg-overlay: rgba(0, 0, 0, 0.7);
         }
 
         * {
@@ -319,24 +302,6 @@
             margin-right: 8px;
             color: var(--secondary-color);
             font-size: 1.1rem;
-        }
-
-        /* Dark mode toggle */
-        .dark-mode-toggle {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            margin-left: 10px;
-            padding: 5px 10px;
-            border-radius: 20px;
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-        }
-
-        .dark-mode-toggle i {
-            margin-right: 5px;
-            font-size: 0.9rem;
         }
 
         /* Button styles */
@@ -1182,10 +1147,10 @@
                         <i class="fas fa-cog"></i>
                         Settings
                     </button>
-                    <div class="dark-mode-toggle" id="darkModeToggle">
-                        <i class="fas fa-moon"></i>
-                        <span>Dark Mode</span>
-                    </div>
+                    <button class="btn btn-danger" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </button>
                 </div>
             </header>
 
@@ -1394,7 +1359,7 @@
             </div>
         </div>
     </div>
-   <script src="script.js"></script>
+ <script src="script.js"></script>
 </body>
 
 </html>

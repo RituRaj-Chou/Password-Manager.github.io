@@ -1,11 +1,10 @@
-        let CORRECT_PASSWORD = localStorage.getItem('masterPassword') || "RituRaj@#1";
+            let CORRECT_PASSWORD = localStorage.getItem('masterPassword') || "RituRaj@#1";
         let passwords = JSON.parse(localStorage.getItem('passwords')) || [];
         let currentEditingId = null;
         let loginAttempts = 0;
         let isLockedOut = false;
         let lockoutTimeout = null;
         const ALLOWED_EMAILS = ['hackerraj592@gmail.com', 'choudhurygokul7@gmail.com'];
-        let darkMode = localStorage.getItem('darkMode') === 'true';
 
         // Loading elements
         const loadingContainer = document.getElementById('loadingContainer');
@@ -46,6 +45,7 @@
         const settingsBtn = document.getElementById('settingsBtn');
         const backupBtn = document.getElementById('backupBtn');
         const importBtn = document.getElementById('importBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
         const addProductModal = document.getElementById('addProductModal');
         const viewPasswordModal = document.getElementById('viewPasswordModal');
         const settingsModal = document.getElementById('settingsModal');
@@ -85,25 +85,6 @@
         const importFile = document.getElementById('importFile');
         const importLoading = document.getElementById('importLoading');
         const importText = document.getElementById('importText');
-        const darkModeToggle = document.getElementById('darkModeToggle');
-
-        // Apply dark mode on load
-        function applyDarkMode() {
-            if (darkMode) {
-                document.body.classList.add('dark-mode');
-                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i><span>Light Mode</span>';
-            } else {
-                document.body.classList.remove('dark-mode');
-                darkModeToggle.innerHTML = '<i class="fas fa-moon"></i><span>Dark Mode</span>';
-            }
-        }
-
-        // Toggle dark mode
-        function toggleDarkMode() {
-            darkMode = !darkMode;
-            localStorage.setItem('darkMode', darkMode);
-            applyDarkMode();
-        }
 
         // Show loading animation initially
         loadingContainer.style.display = 'flex';
@@ -116,7 +97,6 @@
             if (sessionStorage.getItem('loggedIn') === 'true') {
                 loginModal.style.display = 'none';
                 mainContent.style.display = 'block';
-                applyDarkMode();
                 initializeApp();
             } else {
                 loginModal.style.display = 'flex';
@@ -146,7 +126,6 @@
         forgotPasswordLink.addEventListener('click', showEmailLogin);
         backToPasswordLink.addEventListener('click', showPasswordLogin);
         backToEmailLink.addEventListener('click', showEmailLogin);
-        darkModeToggle.addEventListener('click', toggleDarkMode);
 
         productImage.addEventListener('change', handleImageUpload);
         removeImageBtn.addEventListener('click', removeImage);
@@ -203,7 +182,6 @@
                     welcomeContainer.style.display = 'none';
                     sessionStorage.setItem('loggedIn', 'true');
                     mainContent.style.display = 'block';
-                    applyDarkMode();
                     initializeApp();
                 }, 3500);
             } else {
@@ -299,7 +277,6 @@
                         welcomeContainer.style.display = 'none';
                         sessionStorage.setItem('loggedIn', 'true');
                         mainContent.style.display = 'block';
-                        applyDarkMode();
                         initializeApp();
                         resetPasswordBtn.innerHTML = '<i class="fas fa-key"></i> Reset Password';
                         showPasswordLogin();
@@ -376,6 +353,7 @@
             settingsBtn.addEventListener('click', openSettingsModal);
             backupBtn.addEventListener('click', backupPasswords);
             importBtn.addEventListener('click', openImportModal);
+            logoutBtn.addEventListener('click', handleLogout);
             closeModal.addEventListener('click', closeAddModal);
             closeViewModal.addEventListener('click', closeViewModalFunc);
             closeViewModalBtn.addEventListener('click', closeViewModalFunc);
@@ -397,6 +375,13 @@
                 if (e.target === settingsModal) closeSettingsModalFunc();
                 if (e.target === importModal) closeImportModalFunc();
             });
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem('loggedIn');
+            mainContent.style.display = 'none';
+            loginModal.style.display = 'flex';
+            showPasswordLogin();
         }
 
         function renderPasswordTable(filteredPasswords = passwords) {
@@ -831,3 +816,4 @@
         window.editPassword = editPassword;
         window.deletePassword = deletePassword;
     
+   
