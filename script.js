@@ -1,5 +1,4 @@
-
-         let CORRECT_PASSWORD = localStorage.getItem('masterPassword') || "RituRaj@#1";
+            let CORRECT_PASSWORD = localStorage.getItem('masterPassword') || "RituRaj@#1";
         let passwords = JSON.parse(localStorage.getItem('passwords')) || [];
         let currentEditingId = null;
         let loginAttempts = 0;
@@ -86,7 +85,6 @@
         const importFile = document.getElementById('importFile');
         const importLoading = document.getElementById('importLoading');
         const importText = document.getElementById('importText');
-        const passwordCount = document.getElementById('passwordCount');
 
         // Show loading animation initially
         loadingContainer.style.display = 'flex';
@@ -349,8 +347,7 @@
         function initializeApp() {
             renderPasswordTable();
             updateEmptyState();
-            updatePasswordCount();
-
+            document.body.style.overflow = 'auto';
             addProductBtn.addEventListener('click', openAddModal);
             addFirstPasswordBtn.addEventListener('click', openAddModal);
             settingsBtn.addEventListener('click', openSettingsModal);
@@ -378,10 +375,6 @@
                 if (e.target === settingsModal) closeSettingsModalFunc();
                 if (e.target === importModal) closeImportModalFunc();
             });
-        }
-
-        function updatePasswordCount() {
-            passwordCount.textContent = passwords.length;
         }
 
         function handleLogout() {
@@ -538,7 +531,6 @@
                     savePasswords();
                     renderPasswordTable();
                     updateEmptyState();
-                    updatePasswordCount();
                 }, 300);
             }
         }
@@ -573,7 +565,6 @@
                     closeAddModal();
                     renderPasswordTable();
                     updateEmptyState();
-                    updatePasswordCount();
                     submitText.textContent = currentEditingId !== null ? 'Update Password' : 'Save Password';
                 }, 500);
             }, 800);
@@ -684,7 +675,6 @@
                     closeImportModalFunc();
                     renderPasswordTable();
                     updateEmptyState();
-                    updatePasswordCount();
                     importText.textContent = 'Import';
                 }, 500);
             };
@@ -827,4 +817,3 @@
         window.deletePassword = deletePassword;
     
    
- 

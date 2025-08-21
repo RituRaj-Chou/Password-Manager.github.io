@@ -1,5 +1,4 @@
-
-            :root {
+        :root {
             --primary-color: #4285F4;
             --secondary-color: #34A853;
             --danger-color: #EA4335;
@@ -367,9 +366,6 @@
             background-color: var(--card-bg);
             border-radius: 8px;
             box-shadow: 0 4px 12px var(--shadow-color);
-            max-height: 60vh;
-            overflow-y: auto;
-            scroll-behavior: smooth;
         }
 
         .password-table {
@@ -386,15 +382,12 @@
             text-align: left;
             font-weight: 500;
             font-size: 0.9rem;
-            position: sticky;
-            top: 0;
-            z-index: 10;
         }
 
         .password-table td {
             padding: 12px;
             border-bottom: 1px solid var(--border-color);
-            transition: all var(--animation-speed) ease;
+            transition: background-color var(--animation-speed) ease;
             word-break: break-word;
             color: var(--text-color);
             background-color: var(--card-bg);
@@ -406,7 +399,6 @@
 
         .password-table tr:hover td {
             background-color: var(--table-row-hover);
-            transform: translateX(2px);
         }
 
         /* Action buttons */
@@ -777,42 +769,6 @@
         .text-muted {
             color: var(--text-color);
             opacity: 0.7;
-            font-size: 0.8rem;
-        }
-
-        /* Password save container */
-        .password-save-container {
-            background-color: var(--card-bg);
-            border-radius: 20px;
-            padding: 20px;
-            margin-top: 20px;
-            box-shadow: 0 4px 12px var(--shadow-color);
-            transition: all 0.3s ease;
-        }
-
-        .password-save-container:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px var(--shadow-color);
-        }
-
-        .password-save-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .password-save-title {
-            font-size: 1.1rem;
-            font-weight: 500;
-            color: var(--primary-color);
-        }
-
-        .password-save-count {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 3px 8px;
-            border-radius: 10px;
             font-size: 0.8rem;
         }
 
