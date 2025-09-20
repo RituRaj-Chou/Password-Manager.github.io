@@ -112,6 +112,10 @@
                         <i class="fas fa-plus"></i>
                         Add Password
                     </button>
+                    <button class="btn btn-warning" id="deleteAllBtn">
+                        <i class="fas fa-trash"></i>
+                        Delete All
+                    </button>
                     <button class="btn btn-success" id="backupBtn">
                         <i class="fas fa-download"></i>
                         Backup
@@ -167,6 +171,21 @@
                         <i class="fas fa-plus"></i>
                         Add Password
                     </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete All Confirmation Modal -->
+        <div class="confirmation-modal" id="deleteAllModal">
+            <div class="confirmation-content">
+                <div class="confirmation-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h2 class="confirmation-title">Delete All Passwords</h2>
+                <p class="confirmation-message">Are you sure you want to delete ALL your passwords? This action cannot be undone and all your stored passwords will be permanently removed.</p>
+                <div class="confirmation-buttons">
+                    <button class="confirmation-btn confirmation-btn-cancel" id="cancelDeleteAll">Cancel</button>
+                    <button class="confirmation-btn confirmation-btn-confirm" id="confirmDeleteAll">Yes, Delete All</button>
                 </div>
             </div>
         </div>
@@ -347,6 +366,7 @@
             </div>
         </div>
     </div>
+    
     <script src="script.js"></script>
 </body>
 

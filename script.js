@@ -1,4 +1,4 @@
-            let CORRECT_PASSWORD = localStorage.getItem('masterPassword') || "RituRaj@#1";
+        let CORRECT_PASSWORD = localStorage.getItem('masterPassword') || "RituRaj@#1";
         let passwords = JSON.parse(localStorage.getItem('passwords')) || [];
         let currentEditingId = null;
         let loginAttempts = 0;
@@ -41,6 +41,7 @@
         // Main app elements
         const mainContent = document.getElementById('mainContent');
         const addProductBtn = document.getElementById('addProductBtn');
+        const deleteAllBtn = document.getElementById('deleteAllBtn');
         const addFirstPasswordBtn = document.getElementById('addFirstPasswordBtn');
         const settingsBtn = document.getElementById('settingsBtn');
         const backupBtn = document.getElementById('backupBtn');
@@ -50,6 +51,9 @@
         const viewPasswordModal = document.getElementById('viewPasswordModal');
         const settingsModal = document.getElementById('settingsModal');
         const importModal = document.getElementById('importModal');
+        const deleteAllModal = document.getElementById('deleteAllModal');
+        const cancelDeleteAllBtn = document.getElementById('cancelDeleteAll');
+        const confirmDeleteAllBtn = document.getElementById('confirmDeleteAll');
         const closeModal = document.getElementById('closeModal');
         const closeViewModal = document.getElementById('closeViewModal');
         const closeViewModalBtn = document.getElementById('closeViewModalBtn');
@@ -349,6 +353,7 @@
             updateEmptyState();
             document.body.style.overflow = 'auto';
             addProductBtn.addEventListener('click', openAddModal);
+            deleteAllBtn.addEventListener('click', openDeleteAllModal);
             addFirstPasswordBtn.addEventListener('click', openAddModal);
             settingsBtn.addEventListener('click', openSettingsModal);
             backupBtn.addEventListener('click', backupPasswords);
@@ -362,6 +367,8 @@
             cancelAdd.addEventListener('click', closeAddModal);
             cancelSettings.addEventListener('click', closeSettingsModalFunc);
             cancelImport.addEventListener('click', closeImportModalFunc);
+            cancelDeleteAllBtn.addEventListener('click', closeDeleteAllModal);
+            confirmDeleteAllBtn.addEventListener('click', handleDeleteAll);
             productForm.addEventListener('submit', handleFormSubmit);
             settingsForm.addEventListener('submit', handleSettingsSubmit);
             importForm.addEventListener('submit', handleImportSubmit);
@@ -374,7 +381,50 @@
                 if (e.target === viewPasswordModal) closeViewModalFunc();
                 if (e.target === settingsModal) closeSettingsModalFunc();
                 if (e.target === importModal) closeImportModalFunc();
+                if (e.target === deleteAllModal) closeDeleteAllModal();
             });
+        }
+
+        function openDeleteAllModal() {
+            if (passwords.length === 0) {
+                alert('No passwords to delete!');
+                return;
+            }
+            deleteAllModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDeleteAllModal() {
+            deleteAllModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function handleDeleteAll() {
+            // Show loading state
+            confirmDeleteAllBtn.innerHTML = '<span class="loading"></span> Deleting...';
+            
+            // Simulate backend connection delay
+            setTimeout(() => {
+                // Clear all passwords
+                passwords = [];
+                savePasswords();
+                
+                // Update UI
+                renderPasswordTable();
+                updateEmptyState();
+                
+                // Show success message
+                confirmDeleteAllBtn.innerHTML = '<i class="fas fa-check"></i> Deleted!';
+                
+                // Close modal after delay
+                setTimeout(() => {
+                    closeDeleteAllModal();
+                    // Reset button text
+                    setTimeout(() => {
+                        confirmDeleteAllBtn.innerHTML = 'Yes, Delete All';
+                    }, 500);
+                }, 1000);
+            }, 1000);
         }
 
         function handleLogout() {
@@ -816,4 +866,3 @@
         window.editPassword = editPassword;
         window.deletePassword = deletePassword;
     
-   
